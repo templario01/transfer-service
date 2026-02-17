@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: transfer-service
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:transfers}
+    username: postgres
+    password: root
+  r2dbc:
+    url: r2dbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:transfers}
+    username: postgres
+    password: root
+    pool:
+      initial-size: 10
+      max-size: 20
+      validation-query: SELECT 1
+  flyway:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:transfers}
+    user: postgres
+    password: root
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+  exchange-rate:
+    polygon:
+      base-url: https://api.polygon.io
+      api-key: ${POLYGON_API_KEY}
+      timeouts:
+        connect: 2000
+        read: 3000
+        write: 3000
+      retry:
+        max-attempts: 3
+        backoff-ms: 500
+  logging:
+    level:
+      org.springframework.boot.autoconfigure.jdbc: DEBUG
+      org.springframework.boot.autoconfigure: DEBUG

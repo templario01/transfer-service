@@ -1,0 +1,159 @@
+meta {
+  name: Create Transfer
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/transfer
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "sourceAccount": {
+      "accountNumber": "1234567890",
+      "currency": "EUR"
+    },
+    "destinationAccount": {
+      "accountNumber": "0987654321",
+      "currency": "PEN"
+    },
+    "amount": 1000.00,
+    "currency": "USD",
+    "exchangeRateInformation": {
+      "exchangeRateId": "FX-20260213-001",
+      "currency": "PEN",
+      "targetAmount": 3800.00,
+      "rate": 3.80,
+      "operationType": "BUY"
+    }
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  Creates a new transfer between two accounts. exchangeRateInformation is optional and required only when performing FX conversion between own accounts.
+}
+
+example {
+  name: Successful Transfer
+  
+  request: {
+    url: {{baseUrl}}/transfer
+    method: POST
+    mode: json
+    headers: {
+      Content-Type: application/json
+    }
+  
+    body:json: {
+      {
+        "sourceAccount": {
+          "accountNumber": "1234567890",
+          "currency": "USD"
+        },
+        "destinationAccount": {
+          "accountNumber": "0987654321",
+          "currency": "PEN"
+        },
+        "amount": 1000.00,
+        "currency": "USD",
+        "exchangeRateInformation": {
+          "exchangeRateId": "FX-20260213-001",
+          "currency": "PEN",
+          "targetAmount": 3800.00,
+          "rate": 3.80,
+          "operationType": "BUY"
+        }
+      }
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: OK
+      text: 201
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "transactionId": "TX-20260213-0001",
+          "executionTime": "2026-02-13T15:42:10Z",
+          "sourceAccount": {
+            "accountNumber": "1234567890",
+            "currency": "USD",
+            "accountHolder": {
+              "fullName": "Victor Benavente",
+              "cic": "45879632"
+            }
+          },
+          "destinationAccount": {
+            "accountNumber": "0987654321",
+            "currency": "PEN",
+            "accountHolder": {
+              "fullName": "Maria Lopez",
+              "cic": "78451236"
+            }
+          },
+          "exchangeRateInformation": {
+            "targetRate": {
+              "currency": "PEN",
+              "rate": 3.80,
+              "amount": 3800.00
+            }
+          },
+          "status": "SUCCESS"
+        }
+      '''
+    }
+  }
+}
+
+example {
+  name: Rejected Transfer
+  
+  request: {
+    url: 
+    method: POST
+    mode: none
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: Bad Request
+      text: 400
+    }
+  
+    body: {
+      type: json
+      content: '''
+        {
+          "transactionId": "TX-20260213-0002",
+          "executionTime": "2026-02-13T15:45:00Z",
+          "status": "REJECTED"
+        }
+      '''
+    }
+  }
+}

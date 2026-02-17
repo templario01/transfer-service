@@ -1,0 +1,160 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "ZConnect API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/payments": {
+      "post": {
+        "operationId": "executePayment",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ZConnectRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Payment executed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZConnectResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+
+      "AccountHolder": {
+        "type": "object",
+        "required": ["accountNumber", "currency"],
+        "properties": {
+          "accountNumber": {
+            "type": "string",
+            "example": "1234567890"
+          },
+          "currency": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 3,
+            "example": "USD"
+          }
+        }
+      },
+
+      "ExchangeRateInformation": {
+        "type": "object",
+        "required": [
+          "exchangeRateId",
+          "currency",
+          "targetAmount",
+          "rate",
+          "operationType"
+        ],
+        "properties": {
+          "exchangeRateId": {
+            "type": "string",
+            "example": "9a3026e9-5717-4538-b7fe-748d463ea4c0"
+          },
+          "currency": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 3,
+            "example": "PEN"
+          },
+          "targetAmount": {
+            "type": "number",
+            "format": "double",
+            "example": 3800.00
+          },
+          "rate": {
+            "type": "number",
+            "format": "double",
+            "example": 3.80
+          },
+          "operationType": {
+            "type": "string",
+            "enum": ["BUY", "SELL"],
+            "example": "BUY"
+          }
+        }
+      },
+
+      "ZConnectRequest": {
+        "type": "object",
+        "required": [
+          "amount",
+          "currency",
+          "sourceAccount",
+          "destinationAccount"
+        ],
+        "properties": {
+          "amount": {
+            "type": "number",
+            "format": "double",
+            "example": 1000.00
+          },
+          "currency": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 3,
+            "example": "USD"
+          },
+          "sourceAccount": {
+            "$ref": "#/components/schemas/AccountHolder"
+          },
+          "destinationAccount": {
+            "$ref": "#/components/schemas/AccountHolder"
+          },
+          "exchangeRateInformation": {
+            "$ref": "#/components/schemas/ExchangeRateInformation"
+          }
+        }
+      },
+
+      "ZConnectResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ZConnectRequest"
+          },
+          {
+            "type": "object",
+            "required": [
+              "transactionId",
+              "executionTime",
+              "status"
+            ],
+            "properties": {
+              "transactionId": {
+                "type": "string",
+                "format": "uuid",
+                "example": "77cdcbde-c6c6-4e1c-b5cc-38a77b7b2154"
+              },
+              "executionTime": {
+                "type": "string",
+                "format": "date-time",
+                "example": "2026-02-16T15:30:45Z"
+              },
+              "status": {
+                "type": "string",
+                "enum": ["SUCCESSFUL", "FAILED"]
+              }
+            }
+          }
+        ]
+      }
+
+    }
+  }
+}

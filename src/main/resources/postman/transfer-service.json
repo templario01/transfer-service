@@ -1,0 +1,97 @@
+{
+  "info": {
+    "name": "Transactions API",
+    "_postman_id": "f1c2b3a4-9d8e-47ab-91fa-transaction-api-v3",
+    "description": "REST API collection for handling account transfers including optional FX conversion.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Create Transfer (With FX)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sourceAccount\": {\n    \"accountNumber\": \"1234567890\",\n    \"currency\": \"USD\"\n  },\n  \"destinationAccount\": {\n    \"accountNumber\": \"0987654321\",\n    \"currency\": \"PEN\"\n  },\n  \"amount\": 1000.00,\n  \"currency\": \"USD\",\n  \"exchangeRateInformation\": {\n    \"exchangeRateId\": \"FX-20260213-001\",\n    \"currency\": \"USD\",\n    \"targetAmount\": 3800.00,\n    \"rate\": 3.80,\n    \"operationType\": \"BUY\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/transfer",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "transfer"
+          ]
+        },
+        "description": "Creates a new transfer between two accounts. exchangeRateInformation is optional and required only when performing FX conversion between own accounts."
+      },
+      "response": [
+        {
+          "name": "Successful Transfer (With FX)",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sourceAccount\": {\n    \"accountNumber\": \"1234567890\",\n    \"currency\": \"USD\"\n  },\n  \"destinationAccount\": {\n    \"accountNumber\": \"0987654321\",\n    \"currency\": \"PEN\"\n  },\n  \"amount\": 1000.00,\n  \"currency\": \"USD\",\n  \"exchangeRateInformation\": {\n    \"exchangeRateId\": \"FX-20260213-001\",\n    \"currency\": \"USD\",\n    \"targetAmount\": 3800.00,\n    \"rate\": 3.80,\n    \"operationType\": \"BUY\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/transfer",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "transfer"
+              ]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"transactionId\": \"TX-20260213-0001\",\n  \"executionTime\": \"2026-02-13T15:42:10Z\",\n  \"sourceAccount\": {\n    \"accountNumber\": \"1234567890\",\n    \"currency\": \"USD\",\n    \"accountHolder\": {\n      \"fullName\": \"Victor Benavente\",\n      \"cic\": \"45879632\"\n    }\n  },\n  \"destinationAccount\": {\n    \"accountNumber\": \"0987654321\",\n    \"currency\": \"PEN\",\n    \"accountHolder\": {\n      \"fullName\": \"Maria Lopez\",\n      \"cic\": \"78451236\"\n    }\n  },\n  \"exchangeRateInformation\": {\n    \"targetRate\": {\n      \"currency\": \"PEN\",\n      \"rate\": 3.80,\n      \"amount\": 3800.00\n    }\n  },\n  \"status\": \"SUCCESS\"\n}"
+        },
+        {
+          "name": "Rejected Transfer",
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"transactionId\": \"TX-20260213-0002\",\n  \"executionTime\": \"2026-02-13T15:45:00Z\",\n  \"status\": \"REJECTED\"\n}"
+        }
+      ]
+    }
+  ]
+}
